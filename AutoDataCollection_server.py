@@ -1,0 +1,9 @@
+from concurrent import futures
+import os
+import pickle
+import time
+import grpc
+import AutoDataCollection_pb2
+import AutoDataCollection_pb2_grpc
+
+class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)

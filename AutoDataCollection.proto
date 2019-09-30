@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service AutoDataCollection {
+    // 客户端发起请求，服务端流式返回 xml 字符串
+    rpc txt2xml(auth) returns (stream resultXML) {}
+}
+
+message auth {
+    string username = 1;
+    string password = 2;
+}
+
+message resultXML {
+    string result = 1;
+}
