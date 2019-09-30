@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t26\n\x12\x41utoDataCollection\x12 \n\x07txt2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x30\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t24\n\x12\x41utoDataCollection\x12\x1e\n\x07txt2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x62\x06proto3')
 )
 
 
@@ -121,7 +121,7 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=101,
-  serialized_end=155,
+  serialized_end=153,
   methods=[
   _descriptor.MethodDescriptor(
     name='txt2xml',

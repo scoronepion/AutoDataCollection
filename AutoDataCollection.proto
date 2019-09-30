@@ -1,8 +1,8 @@
 syntax = "proto3";
 
 service AutoDataCollection {
-    // 客户端发起请求，服务端流式返回 xml 字符串
-    rpc txt2xml(auth) returns (stream resultXML) {}
+    // 客户端发起请求，服务端返回 xml 字符串
+    rpc txt2xml(auth) returns (resultXML) {}
 }
 
 message auth {

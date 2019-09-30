@@ -14,7 +14,7 @@ class AutoDataCollectionStub(object):
     Args:
       channel: A grpc.Channel.
     """
-    self.txt2xml = channel.unary_stream(
+    self.txt2xml = channel.unary_unary(
         '/AutoDataCollection/txt2xml',
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
@@ -26,7 +26,7 @@ class AutoDataCollectionServicer(object):
   pass
 
   def txt2xml(self, request, context):
-    """客户端发起请求，服务端流式返回 xml 字符串
+    """客户端发起请求，服务端返回 xml 字符串
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -35,7 +35,7 @@ class AutoDataCollectionServicer(object):
 
 def add_AutoDataCollectionServicer_to_server(servicer, server):
   rpc_method_handlers = {
-      'txt2xml': grpc.unary_stream_rpc_method_handler(
+      'txt2xml': grpc.unary_unary_rpc_method_handler(
           servicer.txt2xml,
           request_deserializer=AutoDataCollection__pb2.auth.FromString,
           response_serializer=AutoDataCollection__pb2.resultXML.SerializeToString,
