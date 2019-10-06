@@ -5,11 +5,21 @@ import utils
 import AutoDataCollection_pb2
 import AutoDataCollection_pb2_grpc
 
+default_usr = 'lab106@ces@SHU'
+default_pwd = 'E0KF04JXjXFKwggGP#4yb@HX5LuyITyQFZitEmpiBsfCbZ^7'
+
 class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer):
     def txt2xml(self, request, context):
-        if request.username == 'lab106@ces@SHU' and \
-            request.password == 'E0KF04JXjXFKwggGP#4yb@HX5LuyITyQFZitEmpiBsfCbZ^7':
+        if request.username == default_usr and \
+            request.password == default_pwd:
             return AutoDataCollection_pb2.resultXML(result=utils.txt2xml(incremental_read=False))
+        else:
+            return AutoDataCollection_pb2.resultXML(result='')
+
+    def csv2xml(self, request, context):
+        if request.username == default_usr and \
+            request.password == default_pwd:
+            return AutoDataCollection_pb2.resultXML(result=utils.csv2xml(incremental_read=False))
         else:
             return AutoDataCollection_pb2.resultXML(result='')
 

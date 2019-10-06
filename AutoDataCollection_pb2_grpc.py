@@ -19,6 +19,11 @@ class AutoDataCollectionStub(object):
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
         )
+    self.csv2xml = channel.unary_unary(
+        '/AutoDataCollection/csv2xml',
+        request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
+        response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
+        )
 
 
 class AutoDataCollectionServicer(object):
@@ -32,11 +37,23 @@ class AutoDataCollectionServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def csv2xml(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_AutoDataCollectionServicer_to_server(servicer, server):
   rpc_method_handlers = {
       'txt2xml': grpc.unary_unary_rpc_method_handler(
           servicer.txt2xml,
+          request_deserializer=AutoDataCollection__pb2.auth.FromString,
+          response_serializer=AutoDataCollection__pb2.resultXML.SerializeToString,
+      ),
+      'csv2xml': grpc.unary_unary_rpc_method_handler(
+          servicer.csv2xml,
           request_deserializer=AutoDataCollection__pb2.auth.FromString,
           response_serializer=AutoDataCollection__pb2.resultXML.SerializeToString,
       ),
