@@ -5,6 +5,7 @@ service AutoDataCollection {
     // 客户端发起请求，服务端返回 xml 字符串
     rpc txt2xml(auth) returns (resultXML) {}
     rpc csv2xml(auth) returns (resultXML) {}
+    rpc mysql2xml(auth) returns (resultXML) {}
 }
 
 message auth {

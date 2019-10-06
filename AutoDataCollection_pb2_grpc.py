@@ -24,6 +24,11 @@ class AutoDataCollectionStub(object):
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
         )
+    self.mysql2xml = channel.unary_unary(
+        '/AutoDataCollection/mysql2xml',
+        request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
+        response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
+        )
 
 
 class AutoDataCollectionServicer(object):
@@ -44,6 +49,13 @@ class AutoDataCollectionServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def mysql2xml(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_AutoDataCollectionServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -54,6 +66,11 @@ def add_AutoDataCollectionServicer_to_server(servicer, server):
       ),
       'csv2xml': grpc.unary_unary_rpc_method_handler(
           servicer.csv2xml,
+          request_deserializer=AutoDataCollection__pb2.auth.FromString,
+          response_serializer=AutoDataCollection__pb2.resultXML.SerializeToString,
+      ),
+      'mysql2xml': grpc.unary_unary_rpc_method_handler(
+          servicer.mysql2xml,
           request_deserializer=AutoDataCollection__pb2.auth.FromString,
           response_serializer=AutoDataCollection__pb2.resultXML.SerializeToString,
       ),

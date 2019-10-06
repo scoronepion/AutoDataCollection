@@ -2,6 +2,7 @@ from concurrent import futures
 import time
 import grpc
 import utils
+import base64
 import AutoDataCollection_pb2
 import AutoDataCollection_pb2_grpc
 
@@ -9,17 +10,28 @@ default_usr = 'lab106@ces@SHU'
 default_pwd = 'E0KF04JXjXFKwggGP#4yb@HX5LuyITyQFZitEmpiBsfCbZ^7'
 
 class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer):
+    # 避免中文编码问题，数据返回时同一进行 base64 编码
     def txt2xml(self, request, context):
         if request.username == default_usr and \
             request.password == default_pwd:
-            return AutoDataCollection_pb2.resultXML(result=utils.txt2xml(incremental_read=False))
+            res = base64.b64encode(utils.txt2xml(incremental_read=False).encode('utf-8'))
+            return AutoDataCollection_pb2.resultXML(result=res)
         else:
             return AutoDataCollection_pb2.resultXML(result='')
 
     def csv2xml(self, request, context):
         if request.username == default_usr and \
             request.password == default_pwd:
-            return AutoDataCollection_pb2.resultXML(result=utils.csv2xml(incremental_read=False))
+            res = base64.b64encode(utils.csv2xml(incremental_read=False).encode('utf-8'))
+            return AutoDataCollection_pb2.resultXML(result=res)
+        else:
+            return AutoDataCollection_pb2.resultXML(result='')
+
+    def mysql2xml(self, request, context):
+        if request.username == default_usr and \
+            request.password == default_pwd:
+            res = base64.b64encode(utils.read_mysql().encode('utf-8'))
+            return AutoDataCollection_pb2.resultXML(result=res)
         else:
             return AutoDataCollection_pb2.resultXML(result='')
 

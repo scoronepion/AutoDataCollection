@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t2T\n\x12\x41utoDataCollection\x12\x1e\n\x07txt2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x12\x1e\n\x07\x63sv2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t2v\n\x12\x41utoDataCollection\x12\x1e\n\x07txt2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x12\x1e\n\x07\x63sv2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x12 \n\tmysql2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x62\x06proto3')
 )
 
 
@@ -121,7 +121,7 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=101,
-  serialized_end=185,
+  serialized_end=219,
   methods=[
   _descriptor.MethodDescriptor(
     name='txt2xml',
@@ -136,6 +136,15 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
     name='csv2xml',
     full_name='AutoDataCollection.csv2xml',
     index=1,
+    containing_service=None,
+    input_type=_AUTH,
+    output_type=_RESULTXML,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='mysql2xml',
+    full_name='AutoDataCollection.mysql2xml',
+    index=2,
     containing_service=None,
     input_type=_AUTH,
     output_type=_RESULTXML,
