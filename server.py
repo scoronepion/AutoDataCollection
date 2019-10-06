@@ -9,7 +9,7 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
     def txt2xml(self, request, context):
         if request.username == 'lab106@ces@SHU' and \
             request.password == 'E0KF04JXjXFKwggGP#4yb@HX5LuyITyQFZitEmpiBsfCbZ^7':
-            return AutoDataCollection_pb2.resultXML(result=utils.readFile(incremental_read=False))
+            return AutoDataCollection_pb2.resultXML(result=utils.txt2xml(incremental_read=False))
         else:
             return AutoDataCollection_pb2.resultXML(result='')
 
