@@ -18,14 +18,13 @@ dbInfo = {
 
 def str2xml(label, data):
     # label 为标签，data 为数据，返回 xml 字符串
-    print(data)
     xmlBuilder = Document()
     device = xmlBuilder.createElement("device")  # 创建 device 标签
     xmlBuilder.appendChild(device)
 
     for i in range(0, len(label)):
         temp = xmlBuilder.createElement(str(label[i]))
-        content = xmlBuilder.createTextNode(data[i])
+        content = xmlBuilder.createTextNode(str(data[i]))
         temp.appendChild(content)
         device.appendChild(temp)
     
@@ -129,9 +128,13 @@ def read_mysql(info=None):
     results = cursor.fetchall()
     db.close()
     for row in results:
-        id = row[0]
-        name = row[1]
-        age = row[2]
-        university = row[3]
-        major = row[4]
-    return name
+        id = row[0] if row[0]!=None else ''
+        name = row[1] if row[1]!=None else ''
+        age = row[2] if row[2]!=None else ''
+        university = row[3] if row[3]!=None else ''
+        major = row[4] if row[4]!=None else ''
+    label = ['id', 'name', 'age', 'university', 'major']
+    data = [id, name, age, university, major]
+    xmlResult = str2xml(label, data)
+    print(xmlResult)
+    return xmlResult

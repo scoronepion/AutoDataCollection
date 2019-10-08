@@ -37,11 +37,11 @@ def get_mysql2xml_result(stub):
     ))
 
 def run():
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel('192.168.1.64:50051') as channel:
         stub = AutoDataCollection_pb2_grpc.AutoDataCollectionStub(channel)
         get_txt2xml_result(stub)
         get_csv2xml_result(stub)
-        get_mysql2xml_result(stub)
+        # get_mysql2xml_result(stub)
 
 if __name__ == '__main__':
     run()
