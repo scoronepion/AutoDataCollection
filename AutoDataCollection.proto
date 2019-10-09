@@ -1,5 +1,7 @@
-// python -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. AutoDataCollection.proto
+// python -m grpc_tools.protoc --python_out=./py-server --grpc_python_out=./py-server -I. AutoDataCollection.proto
 syntax = "proto3";
+
+package adc;
 
 service AutoDataCollection {
     // 客户端发起请求，服务端返回 xml 字符串

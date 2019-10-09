@@ -15,17 +15,17 @@ class AutoDataCollectionStub(object):
       channel: A grpc.Channel.
     """
     self.txt2xml = channel.unary_unary(
-        '/AutoDataCollection/txt2xml',
+        '/adc.AutoDataCollection/txt2xml',
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
         )
     self.csv2xml = channel.unary_unary(
-        '/AutoDataCollection/csv2xml',
+        '/adc.AutoDataCollection/csv2xml',
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
         )
     self.mysql2xml = channel.unary_unary(
-        '/AutoDataCollection/mysql2xml',
+        '/adc.AutoDataCollection/mysql2xml',
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
         )
@@ -76,5 +76,5 @@ def add_AutoDataCollectionServicer_to_server(servicer, server):
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'AutoDataCollection', rpc_method_handlers)
+      'adc.AutoDataCollection', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

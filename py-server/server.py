@@ -17,7 +17,7 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
             res = base64.b64encode(utils.txt2xml(incremental_read=False).encode('utf-8'))
             return AutoDataCollection_pb2.resultXML(result=res)
         else:
-            return AutoDataCollection_pb2.resultXML(result='')
+            return AutoDataCollection_pb2.resultXML(result='Auth Failed')
 
     def csv2xml(self, request, context):
         if request.username == default_usr and \
@@ -25,7 +25,7 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
             res = base64.b64encode(utils.csv2xml(incremental_read=False).encode('utf-8'))
             return AutoDataCollection_pb2.resultXML(result=res)
         else:
-            return AutoDataCollection_pb2.resultXML(result='')
+            return AutoDataCollection_pb2.resultXML(result='Auth Failed')
 
     def mysql2xml(self, request, context):
         if request.username == default_usr and \
@@ -33,7 +33,7 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
             res = base64.b64encode(utils.read_mysql().encode('utf-8'))
             return AutoDataCollection_pb2.resultXML(result=res)
         else:
-            return AutoDataCollection_pb2.resultXML(result='')
+            return AutoDataCollection_pb2.resultXML(result='Auth Failed')
 
 def run():
     # 启动 rpc 服务

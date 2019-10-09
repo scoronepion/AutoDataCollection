@@ -17,10 +17,10 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='AutoDataCollection.proto',
-  package='',
+  package='adc',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t2v\n\x12\x41utoDataCollection\x12\x1e\n\x07txt2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x12\x1e\n\x07\x63sv2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x12 \n\tmysql2xml\x12\x05.auth\x1a\n.resultXML\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\x12\x03\x61\x64\x63\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t2\x8e\x01\n\x12\x41utoDataCollection\x12&\n\x07txt2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12&\n\x07\x63sv2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12(\n\tmysql2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x62\x06proto3')
 )
 
 
@@ -28,20 +28,20 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _AUTH = _descriptor.Descriptor(
   name='auth',
-  full_name='auth',
+  full_name='adc.auth',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='username', full_name='auth.username', index=0,
+      name='username', full_name='adc.auth.username', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='password', full_name='auth.password', index=1,
+      name='password', full_name='adc.auth.password', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -59,20 +59,20 @@ _AUTH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=28,
-  serialized_end=70,
+  serialized_start=33,
+  serialized_end=75,
 )
 
 
 _RESULTXML = _descriptor.Descriptor(
   name='resultXML',
-  full_name='resultXML',
+  full_name='adc.resultXML',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='result', full_name='resultXML.result', index=0,
+      name='result', full_name='adc.resultXML.result', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -90,8 +90,8 @@ _RESULTXML = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=72,
-  serialized_end=99,
+  serialized_start=77,
+  serialized_end=104,
 )
 
 DESCRIPTOR.message_types_by_name['auth'] = _AUTH
@@ -101,14 +101,14 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 auth = _reflection.GeneratedProtocolMessageType('auth', (_message.Message,), {
   'DESCRIPTOR' : _AUTH,
   '__module__' : 'AutoDataCollection_pb2'
-  # @@protoc_insertion_point(class_scope:auth)
+  # @@protoc_insertion_point(class_scope:adc.auth)
   })
 _sym_db.RegisterMessage(auth)
 
 resultXML = _reflection.GeneratedProtocolMessageType('resultXML', (_message.Message,), {
   'DESCRIPTOR' : _RESULTXML,
   '__module__' : 'AutoDataCollection_pb2'
-  # @@protoc_insertion_point(class_scope:resultXML)
+  # @@protoc_insertion_point(class_scope:adc.resultXML)
   })
 _sym_db.RegisterMessage(resultXML)
 
@@ -116,16 +116,16 @@ _sym_db.RegisterMessage(resultXML)
 
 _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
   name='AutoDataCollection',
-  full_name='AutoDataCollection',
+  full_name='adc.AutoDataCollection',
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=101,
-  serialized_end=219,
+  serialized_start=107,
+  serialized_end=249,
   methods=[
   _descriptor.MethodDescriptor(
     name='txt2xml',
-    full_name='AutoDataCollection.txt2xml',
+    full_name='adc.AutoDataCollection.txt2xml',
     index=0,
     containing_service=None,
     input_type=_AUTH,
@@ -134,7 +134,7 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='csv2xml',
-    full_name='AutoDataCollection.csv2xml',
+    full_name='adc.AutoDataCollection.csv2xml',
     index=1,
     containing_service=None,
     input_type=_AUTH,
@@ -143,7 +143,7 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='mysql2xml',
-    full_name='AutoDataCollection.mysql2xml',
+    full_name='adc.AutoDataCollection.mysql2xml',
     index=2,
     containing_service=None,
     input_type=_AUTH,

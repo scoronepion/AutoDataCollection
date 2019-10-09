@@ -5,10 +5,10 @@ import pickle
 import MySQLdb
 from xml.dom.minidom import Document
 
-TXT_DATA_PATH = './data/test.txt'
-TXT_FLAG_PATH = './data/txt_flag.b'      # 保存了上次文件读取的位置
-CSV_DATA_PATH = './data/test.csv'
-CSV_FLAG_PATH = './data/csv_flag.b'      # 保存了上次文件读取的位置
+TXT_DATA_PATH = '../data/test.txt'
+TXT_FLAG_PATH = '../data/txt_flag.b'      # 保存了上次文件读取的位置
+CSV_DATA_PATH = '../data/test.csv'
+CSV_FLAG_PATH = '../data/csv_flag.b'      # 保存了上次文件读取的位置
 dbInfo = {
     "address": "192.168.93.132",
     "user": "root",
