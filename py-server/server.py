@@ -3,6 +3,7 @@ import time
 import grpc
 import utils
 import base64
+import time
 import AutoDataCollection_pb2
 import AutoDataCollection_pb2_grpc
 
@@ -10,6 +11,16 @@ default_usr = 'lab106@ces@SHU'
 default_pwd = 'E0KF04JXjXFKwggGP#4yb@HX5LuyITyQFZitEmpiBsfCbZ^7'
 
 class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer):
+    # 心跳检测
+    def healthCheck(self, request, context):
+        if request.username == default_usr and \
+            request.password == default_pwd:
+            localtime = time.asctime(time.localtime(time.time()))
+            print(localtime + ' Health checking status: online')
+            return AutoDataCollection_pb2.healthCheckRes(status='online')
+        else:
+            return AutoDataCollection_pb2.healthCheckRes(status='Auth Failed')
+
     # 避免中文编码问题，数据返回时同一进行 base64 编码
     def txt2xml(self, request, context):
         if request.username == default_usr and \

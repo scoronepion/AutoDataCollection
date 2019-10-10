@@ -4,6 +4,8 @@ syntax = "proto3";
 package adc;
 
 service AutoDataCollection {
+    // 服务端心跳检测
+    rpc healthCheck(auth) returns (healthCheckRes) {}
     // 客户端发起请求，服务端返回 xml 字符串
     rpc txt2xml(auth) returns (resultXML) {}
     rpc csv2xml(auth) returns (resultXML) {}
@@ -17,4 +19,8 @@ message auth {
 
 message resultXML {
     string result = 1;
+}
+
+message healthCheckRes {
+    string status = 1;
 }

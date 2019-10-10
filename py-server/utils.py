@@ -60,7 +60,7 @@ def read_txt_file(filePath=None, flagPath=None, incremental_read=True):
         position = f.tell()
         with open(flagPath, 'wb') as fll:
             pickle.dump(position, fll)
-    return data
+    return data, position
 
 def txt2xml(filePath=None, flagPath=None, incremental_read=True):
     if filePath is None:
@@ -68,7 +68,7 @@ def txt2xml(filePath=None, flagPath=None, incremental_read=True):
     if flagPath is None:
         flagPath = TXT_FLAG_PATH
 
-    dataString = read_txt_file(filePath, flagPath, incremental_read)
+    dataString, position = read_txt_file(filePath, flagPath, incremental_read)
     dataList = dataString.strip().split(",")
     label = ["A", "B", "C", "D"]
     xmlResult = str2xml(label, dataList)
@@ -106,14 +106,14 @@ def read_csv_file(filePath=None, flagPath=None, incremental_read=True):
         with open(flagPath, 'wb') as flag:
             pickle.dump(position, flag)
     
-    return label, data
+    return label, data, position
 
 def csv2xml(filePath=None, flagPath=None, incremental_read=True):
     if filePath is None:
         filePath = CSV_DATA_PATH
     if flagPath is None:
         flagPath = CSV_FLAG_PATH
-    label, data = read_csv_file(filePath, flagPath, incremental_read)
+    label, data, position = read_csv_file(filePath, flagPath, incremental_read)
     label = label.strip().split(",")
     data = data.strip().split(",")
     xmlResult = str2xml(label, data)
