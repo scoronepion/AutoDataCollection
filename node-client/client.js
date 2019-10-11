@@ -22,11 +22,26 @@ const auth = {
     username: username,
     password: password
 }
-stub.txt2xml(auth, (err, res) => {
-    if (err) {
-        console.log("[txt2xml error] " + err)
-    } else {
-        let buff = new Buffer.from(res.result, 'base64')
-        console.log("[txt2xml] received " + buff.toString('utf-8'))
-    }
-})
+
+function get_txt2xml_res(stub) {
+    stub.txt2xml(auth, (err, res) => {
+        if (err) {
+            console.log("[txt2xml error] " + err)
+        } else {
+            let buff = new Buffer.from(res.result, 'base64')
+            console.log("[txt2xml] received " + buff.toString('utf-8'))
+        }
+    })
+}
+
+function get_healthCheck_res(stub) {
+    stub.healthCheck(auth, (err, res) => {
+        if (err) {
+            console.log("[health check error] " + err)
+        } else {
+            console.log('[health check] server status ' + res.status)
+        }
+    })
+}
+
+setInterval(get_healthCheck_res, 3000, stub)

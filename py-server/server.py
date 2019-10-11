@@ -52,6 +52,7 @@ def run():
     AutoDataCollection_pb2_grpc.add_AutoDataCollectionServicer_to_server(AutoDataCollection(), server)
     server.add_insecure_port('localhost:50051')
     server.start()
+    print('service start...')
     try:
         while True:
             time.sleep(60*60*24)
