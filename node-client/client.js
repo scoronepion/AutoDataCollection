@@ -35,7 +35,11 @@ function get_txt2xml_res(stub) {
 }
 
 function get_healthCheck_res(stub) {
-    stub.healthCheck(auth, (err, res) => {
+    // 设置延时 1s 自动关闭连接，否则前台响应会卡住
+    // 但是若服务端网络环境不好，则可适当放宽限制，以免出现误判
+    let deadline = new Date();
+    deadline.setSeconds(deadline.getSeconds() + 1);
+    stub.healthCheck(auth, {deadline: deadline}, (err, res) => {
         if (err) {
             console.log("[health check error] " + err)
         } else {
