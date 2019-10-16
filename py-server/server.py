@@ -48,8 +48,15 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
 
 def run():
     # 启动 rpc 服务
+    # with open('../cert/server.key', 'rb') as f:
+    #     private_key = f.read()
+    # with open('../cert/server.crt', 'rb') as f:
+    #     certificate_chain = f.read()
+    # server_credentials = grpc.ssl_server_credentials(((private_key, certificate_chain,),))
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     AutoDataCollection_pb2_grpc.add_AutoDataCollectionServicer_to_server(AutoDataCollection(), server)
+    # server.add_secure_port('localhost:50051', server_credentials)
     server.add_insecure_port('localhost:50051')
     server.start()
     print('service start...')

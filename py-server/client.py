@@ -47,14 +47,19 @@ def get_healthCheck(stub):
     print('received health check result: ' + status)
 
 def run():
+    # with open('../cert/server.crt', 'rb') as f:
+    #     trusted_certs = f.read()
+    # credentials = grpc.ssl_channel_credentials(root_certificates=trusted_certs)
+
+    # with grpc.secure_channel('localhost:50051', credentials) as channel:
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = AutoDataCollection_pb2_grpc.AutoDataCollectionStub(channel)
         get_txt2xml_result(stub)
-        get_csv2xml_result(stub)
+        # get_csv2xml_result(stub)
         # 每隔 3 秒检测服务在线情况
-        for _ in range(10):
-            get_healthCheck(stub)
-            time.sleep(3)
+        # for _ in range(10):
+        #     get_healthCheck(stub)
+        #     time.sleep(3)
         # thd.Timer(3, get_healthCheck(stub)).start()     # 每隔 3 秒检测服务在线情况
         # get_mysql2xml_result(stub)
 
