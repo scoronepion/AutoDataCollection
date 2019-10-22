@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 import os
 import io
+import time
 import pickle
+import psycopg2
 import MySQLdb
 from xml.dom.minidom import Document
 
@@ -9,11 +11,18 @@ TXT_DATA_PATH = '../data/test.txt'
 TXT_FLAG_PATH = '../data/txt_flag.b'      # 保存了上次文件读取的位置
 CSV_DATA_PATH = '../data/test.csv'
 CSV_FLAG_PATH = '../data/csv_flag.b'      # 保存了上次文件读取的位置
-dbInfo = {
+mysql_info = {
     "address": "192.168.93.132",
     "user": "root",
     "pwd": "123456",
     "database": "myblog"
+}
+pgsql_info = {
+    "address": "192.168.1.19",
+    "database": "mdcs",
+    "user": "postgres",
+    "pwd": "lab106",
+    "port": "5432"
 }
 
 def str2xml(label, data):
@@ -129,7 +138,7 @@ def csv2xml(filePath=None, flagPath=None, incremental_read=True):
 
 def read_mysql(info=None):
     if info is None:
-        info = dbInfo
+        info = mysql_info
     db = MySQLdb.connect(info['address'], info['user'], info['pwd'], info['database'], charset='utf8')
     cursor = db.cursor()
     cursor.execute("select * from pyTest")
@@ -146,3 +155,47 @@ def read_mysql(info=None):
     xmlResult = str2xml(label, data)
     print(xmlResult)
     return xmlResult
+
+def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
+    if filePath is None:
+        filePath = TXT_DATA_PATH
+    if flagPath is None:
+        flagPath = TXT_FLAG_PATH
+
+    label = ["no", "forging-die-specifications",
+            "temperature-of-mould-before-deformation",
+            "temperature-of-workpiece-before-deformation",
+            "deformation-time",
+            "temperature-of-mould-after-deformation",
+            "temperature-of-workpiece-after-deformation",
+            "dimension-of-workpiece-after-deformation"]
+    # 默认所有给定的 id 状态为 false，即无数据
+    idStatus = {}
+    for i in range(startid, endid+1):
+        idStatus[i] = False
+    with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
+                          password=pgsql_info['pwd'], host=pgsql_info['address'], \
+                          port=pgsql_info['port']) as conn:
+        with conn.cursor() as cur:
+            # 要查询的参数必须用单引号括起来，否则会报错。。(太坑了= =)
+            cur.execute('SELECT * FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
+            rows = cur.fetchall()
+            print(rows)
+    # fullxml = ""
+    # # 当给定的 id 范围中存在无数据的 id 时（表示此条 id 对应的实验还未完成），循环
+    # while False in idStatus.values():
+    #     # 每次循环都重新读取 txt 文件
+    #     dataString, position = read_txt_file(filePath, flagPath, incremental_read)
+    #     dataList = dataString.split('\n')
+    #     # 处理本次读取到的数据
+    #     for item in dataList:
+    #         temp = item.split(",")
+    #         # id 在范围中，且为新数据
+    #         if temp[0] in idStatus.keys() and idStatus[temp[0]] == False:
+    #             tempResult = str2xml(label, temp)
+    #             fullxml += tempResult
+    #             idStatus[item[0]] = True
+    #     # 阻塞 10 秒，防止过于频繁的磁盘 io
+    #     print(idStatus)
+    #     time.sleep(10)
+    print(taskid)

@@ -48,10 +48,11 @@ def get_healthCheck(stub):
 
 def get_autoTaskStatus(stub):
     param = AutoDataCollection_pb2.autoTaskParam(
+        taskid="b5b5e6b99e699c40c61ad8",
         username=default_usr,
         password=default_pwd,
-        startid = "100",
-        endid = "1000"
+        startid = 1,
+        endid = 10
     )
     status = stub.autoTxt2xml(param).status
     print('received auto txt2xml result: ' + status)
@@ -64,7 +65,7 @@ def run():
     # with grpc.secure_channel('localhost:50051', credentials) as channel:
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = AutoDataCollection_pb2_grpc.AutoDataCollectionStub(channel)
-        get_txt2xml_result(stub)
+        # get_txt2xml_result(stub)
         get_autoTaskStatus(stub)
         # get_csv2xml_result(stub)
         # 每隔 3 秒检测服务在线情况

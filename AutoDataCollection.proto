@@ -28,10 +28,11 @@ message healthCheckRes {
 }
 
 message autoTaskParam {
-    string username = 1;
-    string password = 2;
-    string startid = 3;
-    string endid = 4;
+    string taskid = 1;
+    string username = 2;
+    string password = 3;
+    uint64 startid = 4;
+    uint64 endid = 5;
 }
 
 message autoTaskStatus {
