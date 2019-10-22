@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='adc',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\x12\x03\x61\x64\x63\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t\" \n\x0ehealthCheckRes\x12\x0e\n\x06status\x18\x01 \x01(\t2\xbf\x01\n\x12\x41utoDataCollection\x12/\n\x0bhealthCheck\x12\t.adc.auth\x1a\x13.adc.healthCheckRes\"\x00\x12&\n\x07txt2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12&\n\x07\x63sv2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12(\n\tmysql2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x18\x41utoDataCollection.proto\x12\x03\x61\x64\x63\"*\n\x04\x61uth\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"\x1b\n\tresultXML\x12\x0e\n\x06result\x18\x01 \x01(\t\" \n\x0ehealthCheckRes\x12\x0e\n\x06status\x18\x01 \x01(\t\"S\n\rautoTaskParam\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\x12\x0f\n\x07startid\x18\x03 \x01(\t\x12\r\n\x05\x65ndid\x18\x04 \x01(\t\" \n\x0e\x61utoTaskStatus\x12\x0e\n\x06status\x18\x01 \x01(\t2\xf9\x01\n\x12\x41utoDataCollection\x12/\n\x0bhealthCheck\x12\t.adc.auth\x1a\x13.adc.healthCheckRes\"\x00\x12&\n\x07txt2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12&\n\x07\x63sv2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12(\n\tmysql2xml\x12\t.adc.auth\x1a\x0e.adc.resultXML\"\x00\x12\x38\n\x0b\x61utoTxt2xml\x12\x12.adc.autoTaskParam\x1a\x13.adc.autoTaskStatus\"\x00\x62\x06proto3')
 )
 
 
@@ -125,9 +125,94 @@ _HEALTHCHECKRES = _descriptor.Descriptor(
   serialized_end=138,
 )
 
+
+_AUTOTASKPARAM = _descriptor.Descriptor(
+  name='autoTaskParam',
+  full_name='adc.autoTaskParam',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='username', full_name='adc.autoTaskParam.username', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='password', full_name='adc.autoTaskParam.password', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='startid', full_name='adc.autoTaskParam.startid', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='endid', full_name='adc.autoTaskParam.endid', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=140,
+  serialized_end=223,
+)
+
+
+_AUTOTASKSTATUS = _descriptor.Descriptor(
+  name='autoTaskStatus',
+  full_name='adc.autoTaskStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='adc.autoTaskStatus.status', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=225,
+  serialized_end=257,
+)
+
 DESCRIPTOR.message_types_by_name['auth'] = _AUTH
 DESCRIPTOR.message_types_by_name['resultXML'] = _RESULTXML
 DESCRIPTOR.message_types_by_name['healthCheckRes'] = _HEALTHCHECKRES
+DESCRIPTOR.message_types_by_name['autoTaskParam'] = _AUTOTASKPARAM
+DESCRIPTOR.message_types_by_name['autoTaskStatus'] = _AUTOTASKSTATUS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 auth = _reflection.GeneratedProtocolMessageType('auth', (_message.Message,), {
@@ -151,6 +236,20 @@ healthCheckRes = _reflection.GeneratedProtocolMessageType('healthCheckRes', (_me
   })
 _sym_db.RegisterMessage(healthCheckRes)
 
+autoTaskParam = _reflection.GeneratedProtocolMessageType('autoTaskParam', (_message.Message,), {
+  'DESCRIPTOR' : _AUTOTASKPARAM,
+  '__module__' : 'AutoDataCollection_pb2'
+  # @@protoc_insertion_point(class_scope:adc.autoTaskParam)
+  })
+_sym_db.RegisterMessage(autoTaskParam)
+
+autoTaskStatus = _reflection.GeneratedProtocolMessageType('autoTaskStatus', (_message.Message,), {
+  'DESCRIPTOR' : _AUTOTASKSTATUS,
+  '__module__' : 'AutoDataCollection_pb2'
+  # @@protoc_insertion_point(class_scope:adc.autoTaskStatus)
+  })
+_sym_db.RegisterMessage(autoTaskStatus)
+
 
 
 _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
@@ -159,8 +258,8 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=141,
-  serialized_end=332,
+  serialized_start=260,
+  serialized_end=509,
   methods=[
   _descriptor.MethodDescriptor(
     name='healthCheck',
@@ -196,6 +295,15 @@ _AUTODATACOLLECTION = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_AUTH,
     output_type=_RESULTXML,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='autoTxt2xml',
+    full_name='adc.AutoDataCollection.autoTxt2xml',
+    index=4,
+    containing_service=None,
+    input_type=_AUTOTASKPARAM,
+    output_type=_AUTOTASKSTATUS,
     serialized_options=None,
   ),
 ])

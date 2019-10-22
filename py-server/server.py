@@ -46,6 +46,14 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
         else:
             return AutoDataCollection_pb2.resultXML(result='Auth Failed')
 
+    def autoTxt2xml(self, request, context):
+        if request.username == default_usr and \
+            request.password == default_pwd:
+            res = "success"
+            return AutoDataCollection_pb2.autoTaskStatus(status=res)
+        else:
+            return AutoDataCollection_pb2.autoTaskStatus(status='Auth Failed')
+
 def run():
     # 启动 rpc 服务
     # with open('../cert/server.key', 'rb') as f:

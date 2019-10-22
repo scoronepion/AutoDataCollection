@@ -34,6 +34,11 @@ class AutoDataCollectionStub(object):
         request_serializer=AutoDataCollection__pb2.auth.SerializeToString,
         response_deserializer=AutoDataCollection__pb2.resultXML.FromString,
         )
+    self.autoTxt2xml = channel.unary_unary(
+        '/adc.AutoDataCollection/autoTxt2xml',
+        request_serializer=AutoDataCollection__pb2.autoTaskParam.SerializeToString,
+        response_deserializer=AutoDataCollection__pb2.autoTaskStatus.FromString,
+        )
 
 
 class AutoDataCollectionServicer(object):
@@ -48,7 +53,7 @@ class AutoDataCollectionServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def txt2xml(self, request, context):
-    """客户端发起请求，服务端返回 xml 字符串
+    """以下为手动采集调用函数，客户端发起请求，服务端返回 xml 字符串
     """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
@@ -64,6 +69,13 @@ class AutoDataCollectionServicer(object):
   def mysql2xml(self, request, context):
     # missing associated documentation comment in .proto file
     pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def autoTxt2xml(self, request, context):
+    """以下为自动采集调用函数，客户端发送请求，服务器处理 idRange 范围的记录，将其上传至数据库，并更新数据库中相应记录
+    """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
@@ -90,6 +102,11 @@ def add_AutoDataCollectionServicer_to_server(servicer, server):
           servicer.mysql2xml,
           request_deserializer=AutoDataCollection__pb2.auth.FromString,
           response_serializer=AutoDataCollection__pb2.resultXML.SerializeToString,
+      ),
+      'autoTxt2xml': grpc.unary_unary_rpc_method_handler(
+          servicer.autoTxt2xml,
+          request_deserializer=AutoDataCollection__pb2.autoTaskParam.FromString,
+          response_serializer=AutoDataCollection__pb2.autoTaskStatus.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
