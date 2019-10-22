@@ -19,7 +19,7 @@ dbInfo = {
 def str2xml(label, data):
     # label 为标签，data 为数据，返回 xml 字符串
     xmlBuilder = Document()
-    device = xmlBuilder.createElement("device")  # 创建 device 标签
+    device = xmlBuilder.createElement("deformation-processing-record")  # 创建 device 标签，这里以交大工艺变形处理数据为例进行开发
     xmlBuilder.appendChild(device)
 
     for i in range(0, len(label)):
@@ -69,8 +69,16 @@ def txt2xml(filePath=None, flagPath=None, incremental_read=True):
         flagPath = TXT_FLAG_PATH
 
     dataString, position = read_txt_file(filePath, flagPath, incremental_read)
-    dataList = dataString.strip().split(",")
-    label = ["A", "B", "C", "D"]
+    # 只读一条数据
+    dataList = dataString.split('\n')[0].split(",")
+    # label = ["A", "B", "C", "D"]
+    label = ["no", "forging-die-specifications",
+            "temperature-of-mould-before-deformation",
+            "temperature-of-workpiece-before-deformation",
+            "deformation-time",
+            "temperature-of-mould-after-deformation",
+            "temperature-of-workpiece-after-deformation",
+            "dimension-of-workpiece-after-deformation"]
     xmlResult = str2xml(label, dataList)
     return xmlResult
 
