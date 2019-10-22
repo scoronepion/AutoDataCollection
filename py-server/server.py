@@ -49,9 +49,11 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
     def autoTxt2xml(self, request, context):
         if request.username == default_usr and \
             request.password == default_pwd:
-            utils.auto_txt2xml(incremental_read=False, startid=request.startid, endid=request.endid, taskid=request.taskid)
-            res = "success"
-            return AutoDataCollection_pb2.autoTaskStatus(status=res)
+            result = utils.auto_txt2xml(incremental_read=False, startid=request.startid, endid=request.endid, taskid=request.taskid)
+            if result:
+                return AutoDataCollection_pb2.autoTaskStatus(status="success")
+            else:
+                return AutoDataCollection_pb2.autoTaskStatus(status="error")
         else:
             return AutoDataCollection_pb2.autoTaskStatus(status='Auth Failed')
 

@@ -4,6 +4,7 @@ import io
 import time
 import pickle
 import psycopg2
+import threading
 import MySQLdb
 from xml.dom.minidom import Document
 
@@ -156,12 +157,19 @@ def read_mysql(info=None):
     print(xmlResult)
     return xmlResult
 
-def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
-    if filePath is None:
-        filePath = TXT_DATA_PATH
-    if flagPath is None:
-        flagPath = TXT_FLAG_PATH
+def set_pgdb_task_status(taskid=None, status=None):
+    try:
+        with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
+                            password=pgsql_info['pwd'], host=pgsql_info['address'], \
+                            port=pgsql_info['port']) as conn:
+            with conn.cursor() as cur:
+                # 要查询的参数必须用单引号括起来，否则会报错。。(太坑了= =)
+                cur.execute('UPDATE public."adcAutoTasks" SET status=%s WHERE taskid=%s', [status,'{taskid}'.format(taskid=taskid)])
+        return True
+    except Exception as e:
+        print("set_pgdb_task_status ERROR! " + e)
 
+def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None):
     label = ["no", "forging-die-specifications",
             "temperature-of-mould-before-deformation",
             "temperature-of-workpiece-before-deformation",
@@ -173,29 +181,35 @@ def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=No
     idStatus = {}
     for i in range(startid, endid+1):
         idStatus[i] = False
-    with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
-                          password=pgsql_info['pwd'], host=pgsql_info['address'], \
-                          port=pgsql_info['port']) as conn:
-        with conn.cursor() as cur:
-            # 要查询的参数必须用单引号括起来，否则会报错。。(太坑了= =)
-            cur.execute('SELECT * FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
-            rows = cur.fetchall()
-            print(rows)
-    # fullxml = ""
-    # # 当给定的 id 范围中存在无数据的 id 时（表示此条 id 对应的实验还未完成），循环
-    # while False in idStatus.values():
-    #     # 每次循环都重新读取 txt 文件
-    #     dataString, position = read_txt_file(filePath, flagPath, incremental_read)
-    #     dataList = dataString.split('\n')
-    #     # 处理本次读取到的数据
-    #     for item in dataList:
-    #         temp = item.split(",")
-    #         # id 在范围中，且为新数据
-    #         if temp[0] in idStatus.keys() and idStatus[temp[0]] == False:
-    #             tempResult = str2xml(label, temp)
-    #             fullxml += tempResult
-    #             idStatus[item[0]] = True
-    #     # 阻塞 10 秒，防止过于频繁的磁盘 io
-    #     print(idStatus)
-    #     time.sleep(10)
-    print(taskid)
+    fullxml = ""
+    # 当给定的 id 范围中存在无数据的 id 时（表示此条 id 对应的实验还未完成），循环
+    while False in idStatus.values():
+        # 每次循环都重新读取 txt 文件
+        dataString, position = read_txt_file(filePath, flagPath, incremental_read)
+        dataList = dataString.split('\n')
+        # 处理本次读取到的数据
+        for item in dataList:
+            temp = item.split(",")
+            # id 在范围中，且为新数据
+            if temp[0] in idStatus.keys() and idStatus[temp[0]] == False:
+                tempResult = str2xml(label, temp)
+                fullxml += tempResult
+                idStatus[item[0]] = True
+        # 阻塞 10 秒，防止过于频繁的磁盘 io
+        print(idStatus)
+        time.sleep(10)
+
+def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
+    if filePath is None:
+        filePath = TXT_DATA_PATH
+    if flagPath is None:
+        flagPath = TXT_FLAG_PATH
+
+    # 读取设备数据前，先将数据库中相应 taskid 记录的 status 改为 1
+    set_pgdb_task_status(taskid=taskid, status=1)
+
+    # 进入采集过程，此操作需要生成新线程执行，否则会阻塞 rpc 通信
+    process = threading.Thread(target=auto_loop_read_txt, args=(filePath, flagPath, incremental_read, startid, endid))
+    process.start()
+
+    return True
