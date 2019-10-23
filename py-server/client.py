@@ -48,7 +48,7 @@ def get_healthCheck(stub):
 
 def get_autoTaskStatus(stub):
     param = AutoDataCollection_pb2.autoTaskParam(
-        taskid="b5b5e6b99e699c40c61ad8",
+        taskid="84ff8f845b93815f9a7943",
         username=default_usr,
         password=default_pwd,
         startid = 1,

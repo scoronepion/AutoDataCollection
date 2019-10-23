@@ -3,6 +3,7 @@ import os
 import io
 import re
 import time
+import json
 import pickle
 import psycopg2
 import threading
@@ -184,7 +185,35 @@ def get_pgdb_template():
     except Exception as e:
         print("set_pgdb_task_status ERROR! " + e)
 
-def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None):
+def save_xml_to_pgdb(taskid=None, xmlstring=None):
+    # 从数据库获取当前的 xmlContents , 并将 xmlstring 插入其中，存回数据库中
+    try:
+        with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
+                            password=pgsql_info['pwd'], host=pgsql_info['address'], \
+                            port=pgsql_info['port']) as conn:
+            with conn.cursor() as cur:
+                # pgsql 行名不识别大小写，统一转换为小写查询，要想识别大小写，必须加引号将列名括起来
+                cur.execute('SELECT xmlcontents FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
+                rows = cur.fetchall()
+                current_xml_data = rows[0][0]
+                current_xml_data['deformation-processing'] = xmlstring
+                jsonObj = json.dumps(current_xml_data)
+                cur.execute('UPDATE public."adcAutoTasks" SET xmlcontents=%s WHERE taskid=%s', \
+                            [jsonObj,'{taskid}'.format(taskid=taskid)])
+                print("xml 字符串上传成功")
+
+        # with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
+        #                     password=pgsql_info['pwd'], host=pgsql_info['address'], \
+        #                     port=pgsql_info['port']) as conn:
+        #     with conn.cursor() as cur:
+        #         # pgsql 行名不识别大小写，统一转换为小写查询，要想识别大小写，必须加引号将列名括起来
+        #         cur.execute('UPDATE public."adcAutoTasks" SET "xmlContents"=%s WHERE taskid=%s', \
+        #                     [xmlObj,'{taskid}'.format(taskid=taskid)])
+        return True
+    except Exception as e:
+        print("save_xml_to_pgdb ERROR! " + e)
+
+def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
     label = ["no", "forging-die-specifications",
             "temperature-of-mould-before-deformation",
             "temperature-of-workpiece-before-deformation",
@@ -211,12 +240,15 @@ def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, star
                 fullxml += tempResult
                 idStatus[int(item[0])] = True
         # 阻塞 10 秒，防止过于频繁的磁盘 io
-        print(idStatus)
         time.sleep(10)
-    template = get_pgdb_template()
-    matchObj = re.match(r'(.*<deformation-processing>)(</deformation-processing>.*)', template)
-    finalxml = matchObj.group(1) + fullxml + matchObj.group(2)
-    print(finalxml)
+    # 以下代码原本用于在服务器端拼接字符串，然后上传至 MDCS 中，现已改为网站统计上传
+    # template = get_pgdb_template()
+    # matchObj = re.match(r'(.*<deformation-processing>)(</deformation-processing>.*)', template)
+    # finalxml = matchObj.group(1) + fullxml + matchObj.group(2)
+
+    # 将 finalxml 存入数据库中
+    save_xml_to_pgdb(taskid=taskid, xmlstring=fullxml)
+    # print(fullxml)
 
 def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
     if filePath is None:
@@ -224,11 +256,12 @@ def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=No
     if flagPath is None:
         flagPath = TXT_FLAG_PATH
 
+    # TODO: 待修改，status 已变为 json
     # 读取设备数据前，先将数据库中相应 taskid 记录的 status 改为 1
-    set_pgdb_task_status(taskid=taskid, status=1)
+    # set_pgdb_task_status(taskid=taskid, status=1)
 
     # 进入采集过程，此操作需要生成新线程执行，否则会阻塞 rpc 通信
-    process = threading.Thread(target=auto_loop_read_txt, args=(filePath, flagPath, incremental_read, startid, endid))
+    process = threading.Thread(target=auto_loop_read_txt, args=(filePath, flagPath, incremental_read, startid, endid, taskid))
     process.start()
 
     return True
