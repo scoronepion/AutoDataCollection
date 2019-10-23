@@ -14,6 +14,7 @@ TXT_DATA_PATH = '../data/test.txt'
 TXT_FLAG_PATH = '../data/txt_flag.b'      # 保存了上次文件读取的位置
 CSV_DATA_PATH = '../data/test.csv'
 CSV_FLAG_PATH = '../data/csv_flag.b'      # 保存了上次文件读取的位置
+DEVICE_NAME = 'deformation-processing'
 mysql_info = {
     "address": "192.168.93.132",
     "user": "root",
@@ -160,15 +161,22 @@ def read_mysql(info=None):
     return xmlResult
 
 def set_pgdb_task_status(taskid=None, status=None):
-    # 从数据库中获取 task status
+    # 从数据库中获取 task status，并进行修改
     try:
         with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
                             password=pgsql_info['pwd'], host=pgsql_info['address'], \
                             port=pgsql_info['port']) as conn:
             with conn.cursor() as cur:
                 # 要查询的参数必须用单引号括起来，否则会报错。。(太坑了= =)
-                cur.execute('UPDATE public."adcAutoTasks" SET status=%s WHERE taskid=%s', [status,'{taskid}'.format(taskid=taskid)])
-        return True
+                cur.execute('SELECT status FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
+                rows = cur.fetchall()
+                current_status = rows[0][0]
+                current_status[DEVICE_NAME] = status
+                jsonObj = json.dumps(current_status)
+                cur.execute('UPDATE public."adcAutoTasks" SET status=%s WHERE taskid=%s', \
+                            [jsonObj,'{taskid}'.format(taskid=taskid)])
+                print("{device_name} status 修改成功".format(device_name=DEVICE_NAME))
+        # return True
     except Exception as e:
         print("set_pgdb_task_status ERROR! " + e)
 
@@ -196,11 +204,11 @@ def save_xml_to_pgdb(taskid=None, xmlstring=None):
                 cur.execute('SELECT xmlcontents FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
                 rows = cur.fetchall()
                 current_xml_data = rows[0][0]
-                current_xml_data['deformation-processing'] = xmlstring
+                current_xml_data[DEVICE_NAME] = xmlstring
                 jsonObj = json.dumps(current_xml_data)
                 cur.execute('UPDATE public."adcAutoTasks" SET xmlcontents=%s WHERE taskid=%s', \
                             [jsonObj,'{taskid}'.format(taskid=taskid)])
-                print("xml 字符串上传成功")
+                print("{device_name} xml 字符串上传成功".format(device_name=DEVICE_NAME))
 
         # with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
         #                     password=pgsql_info['pwd'], host=pgsql_info['address'], \
@@ -257,8 +265,8 @@ def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=No
         flagPath = TXT_FLAG_PATH
 
     # TODO: 待修改，status 已变为 json
-    # 读取设备数据前，先将数据库中相应 taskid 记录的 status 改为 1
-    # set_pgdb_task_status(taskid=taskid, status=1)
+    # 读取设备数据前，先将数据库中相应 taskid 记录的该设备的 status 改为 1
+    set_pgdb_task_status(taskid=taskid, status=1)
 
     # 进入采集过程，此操作需要生成新线程执行，否则会阻塞 rpc 通信
     process = threading.Thread(target=auto_loop_read_txt, args=(filePath, flagPath, incremental_read, startid, endid, taskid))
