@@ -52,7 +52,7 @@ def get_autoTaskStatus(stub):
         username=default_usr,
         password=default_pwd,
         startid = 1,
-        endid = 10
+        endid = 6
     )
     status = stub.autoTxt2xml(param).status
     print('received auto txt2xml result: ' + status)

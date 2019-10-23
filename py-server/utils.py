@@ -191,13 +191,14 @@ def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, star
         for item in dataList:
             temp = item.split(",")
             # id 在范围中，且为新数据
-            if temp[0] in idStatus.keys() and idStatus[temp[0]] == False:
+            if int(temp[0]) in idStatus.keys() and idStatus[int(temp[0])] == False:
                 tempResult = str2xml(label, temp)
                 fullxml += tempResult
-                idStatus[item[0]] = True
+                idStatus[int(item[0])] = True
         # 阻塞 10 秒，防止过于频繁的磁盘 io
         print(idStatus)
         time.sleep(10)
+    print(fullxml)
 
 def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
     if filePath is None:
