@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
 import io
+import re
 import time
 import pickle
 import psycopg2
@@ -158,6 +159,7 @@ def read_mysql(info=None):
     return xmlResult
 
 def set_pgdb_task_status(taskid=None, status=None):
+    # 从数据库中获取 task status
     try:
         with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
                             password=pgsql_info['pwd'], host=pgsql_info['address'], \
@@ -166,6 +168,19 @@ def set_pgdb_task_status(taskid=None, status=None):
                 # 要查询的参数必须用单引号括起来，否则会报错。。(太坑了= =)
                 cur.execute('UPDATE public."adcAutoTasks" SET status=%s WHERE taskid=%s', [status,'{taskid}'.format(taskid=taskid)])
         return True
+    except Exception as e:
+        print("set_pgdb_task_status ERROR! " + e)
+
+def get_pgdb_template():
+    # 从数据库中获取模板 xml 字符串
+    try:
+        with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
+                            password=pgsql_info['pwd'], host=pgsql_info['address'], \
+                            port=pgsql_info['port']) as conn:
+            with conn.cursor() as cur:
+                cur.execute('SELECT content FROM public."adcXmlTemplates" WHERE name=%s', ['sjtu-demo'])
+                rows = cur.fetchall()
+                return rows[0][0]
     except Exception as e:
         print("set_pgdb_task_status ERROR! " + e)
 
@@ -198,7 +213,10 @@ def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, star
         # 阻塞 10 秒，防止过于频繁的磁盘 io
         print(idStatus)
         time.sleep(10)
-    print(fullxml)
+    template = get_pgdb_template()
+    matchObj = re.match(r'(.*<deformation-processing>)(</deformation-processing>.*)', template)
+    finalxml = matchObj.group(1) + fullxml + matchObj.group(2)
+    print(finalxml)
 
 def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
     if filePath is None:
