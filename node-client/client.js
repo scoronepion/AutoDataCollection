@@ -65,5 +65,5 @@ function submit_auto_task(stub) {
     })
 }
 
-// setInterval(submit_auto_task, 3000, stub)
-submit_auto_task(stub)
+setInterval(get_healthCheck_res, 3000, stub)
+// submit_auto_task(stub)

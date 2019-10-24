@@ -1,0 +1,9 @@
+{
+    "apps": [
+      {
+        "name": "数据采集上传服务",
+        "script": "./client.js",
+        "instances": 1
+      }
+    ]
+  }

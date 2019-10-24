@@ -213,7 +213,7 @@ def save_xml_to_pgdb(taskid=None, xmlstring=None):
                 cur.execute('SELECT status FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
                 rows = cur.fetchall()
                 current_status = rows[0][0]
-                # 2 表示已完成
+                # 2 表示已完成 
                 current_status[DEVICE_NAME] = 2
                 jsonObj = json.dumps(current_status)
                 cur.execute('UPDATE public."adcAutoTasks" SET status=%s WHERE taskid=%s', \
