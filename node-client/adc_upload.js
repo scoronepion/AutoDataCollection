@@ -31,6 +31,7 @@ function get_task_list() {
                 client.end()
                 reject(err)
             }
+            // TODO：这里还要考虑 status 的情况，必须是所有的 status 都为 2 才能 resolve
             client.query('SELECT * FROM public."adcAutoTasks" WHERE uploadstatus=0',
                 (err, res) => {
                     if (err) {
@@ -74,21 +75,25 @@ function get_template(name) {
 async function get_full_xml_string() {
     let taskList = await get_task_list()
     for (let i in taskList) {
-        let template = await get_template(taskList[i].taskData.templateName)
+        // 每个 i 都代表一个任务
+        let empty_template = await get_template(taskList[i].taskData.templateName)
         // console.log(template[0].content)
-        // 大于 0，表示有数据
-        // TODO：小于 0 的情况
-        if (template.length > 0) {
+        // 大于 0，表示模板名称正确，已查询到模板
+        // TODO：小于 0 的情况，模板名称错误，该任务上传状态应该为中止（uploadstatus）
+        if (empty_template.length > 0) {
             // 提取出每一个设备的设备名称与对应的 xml 字符串，并与模板拼接在一起
+            let fullxml = empty_template[0].content
+            let key_list = []
             for (let key in taskList[i].xmlcontents) {
                 // key 为设备名称
                 // let regExp = /(.*<deformation-processing>)(<\/deformation-processing>.*)/
+                key_list.push(key)
                 let reg = new RegExp("(.*<" + key + ">)(</" + key + ">.*)")
-                let front = reg.exec(template[0].content)[1]
-                let end = reg.exec(template[0].content)[2]
-                let fullxml = front + taskList[i].xmlcontents[key] + end
-                console.log(fullxml)
+                let front = reg.exec(fullxml)[1]
+                let end = reg.exec(fullxml)[2]
+                fullxml = front + taskList[i].xmlcontents[key] + end
             }
+            console.log(fullxml)
         }
     }
 }
