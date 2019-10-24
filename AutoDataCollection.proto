@@ -28,7 +28,6 @@ message healthCheckRes {
 }
 
 // taskid 用于修改数据库内对应任务的 status
-// 不加入模板 name 的理由是：一台设备对应一个模板，只需要在 util.py 中指定不同设备的模板名即可
 message autoTaskParam {
     string taskid = 1;
     string username = 2;

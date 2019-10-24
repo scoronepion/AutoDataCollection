@@ -180,18 +180,18 @@ def set_pgdb_task_status(taskid=None, status=None):
     except Exception as e:
         print("set_pgdb_task_status ERROR! " + e)
 
-def get_pgdb_template():
-    # 从数据库中获取模板 xml 字符串
-    try:
-        with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
-                            password=pgsql_info['pwd'], host=pgsql_info['address'], \
-                            port=pgsql_info['port']) as conn:
-            with conn.cursor() as cur:
-                cur.execute('SELECT content FROM public."adcXmlTemplates" WHERE name=%s', ['sjtu-demo'])
-                rows = cur.fetchall()
-                return rows[0][0]
-    except Exception as e:
-        print("set_pgdb_task_status ERROR! " + e)
+# def get_pgdb_template():
+#     # 从数据库中获取模板 xml 字符串
+#     try:
+#         with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
+#                             password=pgsql_info['pwd'], host=pgsql_info['address'], \
+#                             port=pgsql_info['port']) as conn:
+#             with conn.cursor() as cur:
+#                 cur.execute('SELECT content FROM public."adcXmlTemplates" WHERE name=%s', ['sjtu-demo'])
+#                 rows = cur.fetchall()
+#                 return rows[0][0]
+#     except Exception as e:
+#         print("set_pgdb_task_status ERROR! " + e)
 
 def save_xml_to_pgdb(taskid=None, xmlstring=None):
     # 从数据库获取当前的 xmlContents , 并将 xmlstring 插入其中，存回数据库中
@@ -209,6 +209,17 @@ def save_xml_to_pgdb(taskid=None, xmlstring=None):
                 cur.execute('UPDATE public."adcAutoTasks" SET xmlcontents=%s WHERE taskid=%s', \
                             [jsonObj,'{taskid}'.format(taskid=taskid)])
                 print("{device_name} xml 字符串上传成功".format(device_name=DEVICE_NAME))
+                # 上传成功后，将数据库对应设备的 status 改为 2
+                cur.execute('SELECT status FROM public."adcAutoTasks" WHERE taskid=%s', ['{taskid}'.format(taskid=taskid)])
+                rows = cur.fetchall()
+                current_status = rows[0][0]
+                # 2 表示已完成
+                current_status[DEVICE_NAME] = 2
+                jsonObj = json.dumps(current_status)
+                cur.execute('UPDATE public."adcAutoTasks" SET status=%s WHERE taskid=%s', \
+                            [jsonObj,'{taskid}'.format(taskid=taskid)])
+                print("{device_name} status 修改成功".format(device_name=DEVICE_NAME))
+                
 
         # with psycopg2.connect(database=pgsql_info['database'], user=pgsql_info['user'], \
         #                     password=pgsql_info['pwd'], host=pgsql_info['address'], \
@@ -264,7 +275,6 @@ def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=No
     if flagPath is None:
         flagPath = TXT_FLAG_PATH
 
-    # TODO: 待修改，status 已变为 json
     # 读取设备数据前，先将数据库中相应 taskid 记录的该设备的 status 改为 1
     set_pgdb_task_status(taskid=taskid, status=1)
 

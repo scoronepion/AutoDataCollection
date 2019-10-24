@@ -22,6 +22,13 @@ const auth = {
     username: username,
     password: password
 }
+const autoParam = {
+    taskid: '0e7759c1fc65d7581c72a3',
+    username: username,
+    password: password,
+    startid: 1,
+    endid: 1
+}
 
 function get_txt2xml_res(stub) {
     stub.txt2xml(auth, (err, res) => {
@@ -48,4 +55,15 @@ function get_healthCheck_res(stub) {
     })
 }
 
-setInterval(get_healthCheck_res, 3000, stub)
+function submit_auto_task(stub) {
+    stub.autoTxt2xml(autoParam, (err, res) => {
+        if (err) {
+            console.log("[submit_auto_task error] " + err)
+        } else {
+            console.log('[submit_auto_task] server status ' + res.status)
+        }
+    })
+}
+
+// setInterval(submit_auto_task, 3000, stub)
+submit_auto_task(stub)
