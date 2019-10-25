@@ -1,14 +1,15 @@
 from concurrent import futures
+import sys
 import time
 import grpc
 import utils
 import base64
-import time
 import AutoDataCollection_pb2
 import AutoDataCollection_pb2_grpc
 
 default_usr = 'lab106@ces@SHU'
 default_pwd = 'E0KF04JXjXFKwggGP#4yb@HX5LuyITyQFZitEmpiBsfCbZ^7'
+device_name = ''
 
 class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer):
     # 心跳检测
@@ -49,7 +50,7 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
     def autoTxt2xml(self, request, context):
         if request.username == default_usr and \
             request.password == default_pwd:
-            result = utils.auto_txt2xml(incremental_read=False, startid=request.startid, endid=request.endid, taskid=request.taskid)
+            result = utils.auto_txt2xml(incremental_read=False, startid=request.startid, endid=request.endid, taskid=request.taskid, device_name=device_name)
             if result:
                 return AutoDataCollection_pb2.autoTaskStatus(status="success")
             else:
@@ -57,7 +58,7 @@ class AutoDataCollection(AutoDataCollection_pb2_grpc.AutoDataCollectionServicer)
         else:
             return AutoDataCollection_pb2.autoTaskStatus(status='Auth Failed')
 
-def run():
+def run(port):
     # 启动 rpc 服务
     # with open('../cert/server.key', 'rb') as f:
     #     private_key = f.read()
@@ -68,9 +69,9 @@ def run():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     AutoDataCollection_pb2_grpc.add_AutoDataCollectionServicer_to_server(AutoDataCollection(), server)
     # server.add_secure_port('localhost:50051', server_credentials)
-    server.add_insecure_port('localhost:50051')
+    server.add_insecure_port('localhost:{port}'.format(port=port))
     server.start()
-    print('service start...')
+    print('service start at {port}...'.format(port=port))
     try:
         while True:
             time.sleep(60*60*24)
@@ -78,4 +79,6 @@ def run():
         server.stop(0)
 
 if __name__ == '__main__':
-    run()
+    device_name = sys.argv[1]
+    port = sys.argv[2]
+    run(port)

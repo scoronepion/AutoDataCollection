@@ -23,7 +23,7 @@ const auth = {
     password: password
 }
 const autoParam = {
-    taskid: '0e7759c1fc65d7581c72a3',
+    taskid: 'a800d833d52e85fac54e0e',
     username: username,
     password: password,
     startid: 1,
@@ -65,5 +65,5 @@ function submit_auto_task(stub) {
     })
 }
 
-setInterval(get_healthCheck_res, 3000, stub)
-// submit_auto_task(stub)
+// setInterval(get_healthCheck_res, 3000, stub)
+submit_auto_task(stub)

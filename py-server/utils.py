@@ -32,7 +32,8 @@ pgsql_info = {
 def str2xml(label, data):
     # label 为标签，data 为数据，返回 xml 字符串
     xmlBuilder = Document()
-    device = xmlBuilder.createElement("deformation-processing-record")  # 创建 device 标签，这里以交大工艺变形处理数据为例进行开发
+    # device = xmlBuilder.createElement("deformation-processing-record")  # 创建 device 标签，这里以交大工艺变形处理数据为例进行开发
+    device = xmlBuilder.createElement("{device_name}-record".format(device_name=DEVICE_NAME))
     xmlBuilder.appendChild(device)
 
     for i in range(0, len(label)):
@@ -269,11 +270,14 @@ def auto_loop_read_txt(filePath=None, flagPath=None, incremental_read=True, star
     save_xml_to_pgdb(taskid=taskid, xmlstring=fullxml)
     # print(fullxml)
 
-def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None):
+def auto_txt2xml(filePath=None, flagPath=None, incremental_read=True, startid=None, endid=None, taskid=None, device_name=None):
     if filePath is None:
         filePath = TXT_DATA_PATH
     if flagPath is None:
         flagPath = TXT_FLAG_PATH
+
+    global DEVICE_NAME
+    DEVICE_NAME = device_name
 
     # 读取设备数据前，先将数据库中相应 taskid 记录的该设备的 status 改为 1
     set_pgdb_task_status(taskid=taskid, status=1)
