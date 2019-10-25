@@ -23,8 +23,8 @@ function connection_test() {
     })
 }
 
-// 获取 task 列表
-function get_task_list() {
+// 依据 uploadstatus 获取 task 列表
+function get_task_list(uploadstatus) {
     let client = new pgOpt.Client(conStr)
     return new Promise((resolve, reject) => {
         client.connect((err) => {
@@ -33,8 +33,7 @@ function get_task_list() {
                 client.end()
                 reject(err)
             }
-            // TODO：这里还要考虑 status 的情况，必须是所有的 status 都为 2 才能 resolve
-            client.query('SELECT * FROM public."adcAutoTasks" WHERE uploadstatus=0',
+            client.query(`SELECT * FROM public."adcAutoTasks" WHERE uploadstatus=${uploadstatus}`,
                 (err, res) => {
                     if (err) {
                         client.end()
@@ -74,8 +73,80 @@ function get_template(name) {
     })
 }
 
+function get_upload_status(taskid) {
+    // 直接返回数字
+    let client = new pgOpt.Client(conStr)
+    return new Promise((resolve, reject) => {
+        client.connect((err) => {
+            if (err) {
+                console.log('connect error:' + err.message)
+                client.end()
+                reject(err)
+            }
+            client.query(`SELECT uploadstatus FROM public."adcAutoTasks" WHERE taskid='${taskid}'`,
+                (err, res) => {
+                    if (err) {
+                        client.end()
+                        reject(err)
+                    } else {
+                        client.end()
+                        resolve(res.rows[0].uploadstatus)
+                    }
+                }
+            )
+        })
+    })
+}
+
+function set_upload_status(taskid, status) {
+    let client = new pgOpt.Client(conStr)
+    return new Promise((resolve, reject) => {
+        client.connect(err => {
+            if (err) {
+                console.log('connect error:' + err.message)
+                client.end()
+                reject(err)
+            }
+            client.query(`UPDATE public."adcAutoTasks" SET uploadstatus=${status} WHERE taskid='${taskid}'`,
+                (err, res) => {
+                    if (err) {
+                        client.end()
+                        reject(false)
+                    } else {
+                        client.end()
+                        resolve(true)
+                    }
+                }
+            )
+        })
+    })
+}
+
+function check_and_set_uploadstatus() {
+    // 检查所有 uploadstatus 为 -1 的任务，如果其中的设备 task status 全为 2 的话，表示该任务采集已完成，将 uploadstatus 改为 0（预备上传）
+    return new Promise(async (resolve, reject) => {
+        let taskList = await get_task_list(-1)
+        for (let i in taskList) {
+            let flag = false
+            for (let key in taskList[i].status) {
+                if (taskList[i].status[key] != 2) {
+                    flag = true
+                    break
+                }
+            }
+            if (!flag) {
+                // 此任务里，所有设备的 status 都为 2，因此可以准备上传
+                await set_upload_status(taskList[i].taskid, 0)
+            }
+        }
+        resolve(true)
+    })
+}
+
 async function get_full_xml_string() {
-    let taskList = await get_task_list()
+    await check_and_set_uploadstatus()
+    // 获取 uploadstatus 为 0 的任务
+    let taskList = await get_task_list(0)
     for (let i in taskList) {
         // 每个 i 都代表一个任务
         let empty_template = await get_template(taskList[i].taskData.templateName)
@@ -89,12 +160,20 @@ async function get_full_xml_string() {
         // TODO：小于 0 的情况，模板名称错误，该任务上传状态应该为中止（uploadstatus）
         let mdcsid = ""
         let fullxml = ""
-        // 首先填充上传日期 upload-date 标签
+
+        // 填充上传日期 upload-date 标签
         let date = new RegExp("(.*<upload-date>)(</upload-date>.*)")
         let before = date.exec(empty_template[0].content)[1]
         let after = date.exec(empty_template[0].content)[2]
         let today = new Date()
         empty_template[0].content = before + today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate() + after
+
+        // 填充 xml name
+        let name = new RegExp("(.*<name>)(</name>.*)")
+        before = name.exec(empty_template[0].content)[1]
+        after = name.exec(empty_template[0].content)[2]
+        empty_template[0].content = before + taskList[i].taskData.xmlName + after
+
         if (empty_template.length > 0) {
             // 提取出每一个设备的设备名称与对应的 xml 字符串，并与模板拼接在一起
             fullxml = empty_template[0].content
@@ -110,25 +189,60 @@ async function get_full_xml_string() {
                 fullxml = before + taskList[i].xmlcontents[key] + after
             }
         }
-        console.log(fullxml)
-        // axios({
-        //     method: 'POST',
-        //     url: 'http://matdata.shu.edu.cn/mdcs/rest/data/',
-        //     data: {
-        //         "title": xml_name,
-        //         "template": mdcsid,
-        //         "xml_content": fullxml
-        //     },
-        //     auth: {
-        //         username: auth.username,
-        //         password: auth.password
-        //     }
-        // }).then(res => {
-        //     console.log(res)
-        // }).catch(err => {
-        //     console.log(err)
-        // })
+        // console.log(fullxml)
+        // 上传前再检查 uploadstatus
+        let uploadStatus = await get_upload_status(taskList[i].taskid)
+        // 为 0，允许上传
+        if (uploadStatus === 0) {
+            // 上传进程
+            axios({
+                method: 'POST',
+                url: 'http://matdata.shu.edu.cn/mdcs/rest/data/',
+                data: {
+                    "title": xml_name,
+                    "template": mdcsid,
+                    "xml_content": fullxml
+                },
+                auth: {
+                    username: auth.username,
+                    password: auth.password
+                }
+            }).then(async (res) => {
+                // 上传成功，将 uploadstatus 置为 1
+                let flag = await set_upload_status(taskList[i].taskid, 1)
+                if (flag) {
+                    console.log(new Date().toLocaleString() + ` id:${taskList[i].taskid} 上传成功, 上传状态已置为1`)
+                } else {
+                    console.log(new Date().toLocaleString() + ` id:${taskList[i].taskid} 上传成功，上传状态置1失败`)
+                }
+            }).catch(async (err) => {
+                if (err.response.status === 500) {
+                    let flag = await set_upload_status(taskList[i].taskid, 1)
+                    if (flag) {
+                        console.log(new Date().toLocaleString() + ` id:${taskList[i].taskid} 上传成功, 上传状态已置为1`)
+                    } else {
+                        console.log(new Date().toLocaleString() + ` id:${taskList[i].taskid} 上传成功，上传状态置1失败`)
+                    }
+                } else {
+                    // 上传失败，将 uploadstatus 置为 2
+                    let flag = await set_upload_status(taskList[i].taskid, 2)
+                    if (flag) {
+                        console.log(new Date().toLocaleString() + ` id:${taskList[i].taskid} 上传失败, 上传状态已置为2`)
+                    } else {
+                        console.log(new Date().toLocaleString() + ` id:${taskList[i].taskid} 上传失败, 上传状态置2失败`)
+                    }
+                    console.log(err)
+                }
+            })
+        }
     }
+    console.log(new Date().toLocaleString() + " 所有上传任务已完成，程序将于10秒后重新扫描。")
 }
 
-get_full_xml_string()
+// console.log("程序已启动...")
+setInterval(get_full_xml_string, 10000)
+// check_and_set_uploadstatus().then(res => {
+//     console.log(res)
+// }).catch(err => {
+//     console.log(err)
+// })
