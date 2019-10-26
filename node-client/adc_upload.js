@@ -245,4 +245,4 @@ setInterval(get_full_xml_string, 10000)
 //     console.log(res)
 // }).catch(err => {
 //     console.log(err)
-// })
+// })  
