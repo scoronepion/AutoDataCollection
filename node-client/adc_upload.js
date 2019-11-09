@@ -239,7 +239,7 @@ async function get_full_xml_string() {
     console.log(new Date().toLocaleString() + " 所有上传任务已完成，程序将于10秒后重新扫描。")
 }
 
-// console.log("程序已启动...")
+console.log("上传程序已启动...")
 setInterval(get_full_xml_string, 10000)
 // check_and_set_uploadstatus().then(res => {
 //     console.log(res)
